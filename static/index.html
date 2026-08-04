@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Travel Planner - Premium</title>
+    <!-- Modern Font: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons for modern premium icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Marked.js for parsing Markdown itinerary -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Animated Background Gradients -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+
+    <div class="container">
+        <header>
+            <h1><i class="ph-fill ph-airplane-tilt"></i> Travel<span>Agent</span></h1>
+            <p>Your ultra-premium, AI-powered travel planner.</p>
+        </header>
+
+        <main>
+            <section class="input-section glass-card">
+                <label for="prompt">Where do you want to go?</label>
+                <div class="input-wrapper">
+                    <i class="ph ph-magnifying-glass search-icon"></i>
+                    <input type="text" id="prompt" placeholder="e.g. plan a 5 day trip to Hunza with a budget of 120000" autocomplete="off">
+                </div>
+                <button id="submit-btn" class="glow-button">
+                    <span>Generate Itinerary</span>
+                    <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </section>
+
+            <section id="progress-section" class="progress-section glass-card hidden">
+                <div class="section-header">
+                    <h2><i class="ph-fill ph-cpu"></i> Agent Progress</h2>
+                    <div id="loader" class="loader pulse"></div>
+                </div>
+                <div id="log-container" class="log-container">
+                    <!-- Logs will be appended here -->
+                </div>
+            </section>
+
+            <section id="result-section" class="result-section glass-card hidden">
+                <div class="section-header">
+                    <h2><i class="ph-fill ph-map-pin"></i> Your Premium Itinerary</h2>
+                    <button id="copy-btn" class="icon-btn" title="Copy to clipboard">
+                        <i class="ph ph-copy"></i>
+                    </button>
+                </div>
+                <div id="itinerary-content" class="itinerary-content markdown-body">
+                    <!-- Markdown will be rendered here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
