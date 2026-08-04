@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const promptInput = document.getElementById('prompt');
+    const pickupInput = document.getElementById('pickup');
+    const destinationInput = document.getElementById('destination');
+    const dateInput = document.getElementById('date');
+    const currencyInput = document.getElementById('currency');
+    const budgetInput = document.getElementById('budget');
+    const membersInput = document.getElementById('members');
     const submitBtn = document.getElementById('submit-btn');
     const progressSection = document.getElementById('progress-section');
     const logContainer = document.getElementById('log-container');
@@ -17,13 +22,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     submitBtn.addEventListener('click', startPlanning);
-    promptInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') startPlanning();
-    });
+    // Remove keypress listener as we now have multiple inputs
+    // (Or you could add it to all of them, but clicking the button is standard)
 
     function startPlanning() {
-        const query = promptInput.value.trim();
-        if (!query) return;
+        const pickup = pickupInput.value.trim();
+        const destination = destinationInput.value.trim();
+        const date = dateInput.value.trim();
+        const currency = currencyInput.value;
+        const budget = budgetInput.value.trim();
+        const members = membersInput.value.trim();
+
+        if (!pickup || !destination || !date || !budget || !members) {
+            alert("Please fill out all fields before generating an itinerary.");
+            return;
+        }
+
+        const query = `Plan a trip from ${pickup} to ${destination} on ${date} for ${members} people with a total budget of ${budget} ${currency}. Calculate realistic costs and convert if necessary.`;
 
         // Reset UI state
         submitBtn.disabled = true;
@@ -55,7 +70,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleEvent(data, eventSource) {
         if (data.type === 'tool') {
-            appendLog(`Using tool: ${data.name} (${JSON.stringify(data.args)})`, 'tool');
+            const toolMessages = {
+                'currency_tool': 'Checking currency exchange rates...',
+                'places_tool': 'Finding landmarks and attractions...',
+                'weather_tool': 'Fetching weather forecast...',
+                'routing_tool': 'Planning your route and travel times...',
+                'cost_estimator': 'Calculating trip budget and expenses...',
+                'search_tool': 'Searching the web for latest info...'
+            };
+            
+            const userMsg = toolMessages[data.name] || `Using tool: ${data.name}...`;
+            const rawJson = JSON.stringify(data.args, null, 2);
+            
+            const htmlMessage = `
+                <div><strong>${userMsg}</strong></div>
+                <details style="margin-top: 0.5rem; cursor: pointer; color: var(--text-muted); font-size: 0.85rem;">
+                    <summary>Show technical details</summary>
+                    <pre style="margin-top: 0.5rem; background: rgba(0,0,0,0.4); padding: 0.5rem; border-radius: 4px; overflow-x: auto;">${rawJson}</pre>
+                </details>
+            `;
+            
+            appendLog(htmlMessage, 'tool', true);
         } else if (data.type === 'critic') {
             appendLog(`Critic / Status: ${data.content}`, 'error');
             // If it's a critical error (like rate limit), close and finish
@@ -75,10 +110,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function appendLog(message, type = 'normal') {
+    function appendLog(message, type = 'normal', isHtml = false) {
         const entry = document.createElement('div');
         entry.className = `log-entry ${type}`;
-        entry.textContent = message;
+        
+        if (isHtml) {
+            entry.innerHTML = message;
+        } else {
+            entry.textContent = message;
+        }
+        
         logContainer.appendChild(entry);
         
         // Auto scroll to bottom

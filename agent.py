@@ -15,7 +15,7 @@ class AgentState(TypedDict):
     accepted: bool
 
 def planner_node(state: AgentState):
-    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0, max_retries=3, timeout=30)
+    llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0, max_retries=3, timeout=30)
     llm_with_tools = llm.bind_tools(get_tools)
     
     system_prompt = SystemMessage(content='''You are an Autonomous Travel Planning Agent.
@@ -30,9 +30,10 @@ You must use your tools to:
 RULES:
 - Your primary output MUST be a complete, structured, day-by-day travel itinerary. Never just output a summary of tool results or failures.
 - You must explain your decisions! Every recommendation must have a stated reason.
-- CRITICAL PRICING RULE: NEVER hallucinate fake low prices just to make the plan fit the user's budget! Use REALISTIC market prices for hotels, transport, and food (e.g., a trip to Hunza realistically costs at least 50,000+ PKR). If the user's budget is ridiculously low, calculate the REALISTIC cost, explicitly flag that the plan is SEVERELY OVER BUDGET, and explain to the user why their budget is unrealistic.
-- If a tool fails or returns no data, DO NOT stop planning. Gracefully mention the missing data IN the itinerary, but YOU MUST STILL GENERATE THE FULL DAY-BY-DAY ITINERARY based on your general knowledge.
-- DO NOT just write a meta-description of what you did. Actively create and format the actual plan beautifully in Markdown.
+- CRITICAL PRICING RULE: NEVER hallucinate fake low prices just to make the plan fit the user's budget! Use REALISTIC market prices. 
+- DO NOT FAKE THE USER'S BUDGET! If the user gives a budget (e.g. 300 USD), you MUST use that exact budget (converted to local currency). Do not magically increase the user's budget to 500,000 to make the plan "under budget". If the real cost exceeds the user's budget, calculate the REALISTIC cost, explicitly flag that the plan is SEVERELY OVER BUDGET, and explain to the user why their budget is unrealistic.
+- If a tool fails or returns no data (e.g., cannot find a landmark), DO NOT mention the failure in the itinerary! SILENTLY use your general knowledge to fill in the gaps and write the plan confidently. The user should never know a tool failed.
+- DO NOT just write a meta-description of what you did. DO NOT write meta-commentary at the end like "I have provided reasons for each recommendation". The final output is for the USER, not the Critic. Actively create and format the actual plan beautifully in Markdown.
 ''')
     
     # Prepend system prompt
@@ -51,17 +52,22 @@ def should_continue(state: AgentState) -> Literal["tools", "critic_node"]:
 
 def critic_node(state: AgentState):
     messages = state['messages']
+    user_request = messages[0].content
     last_message = messages[-1].content
     
     critic_prompt = f"""
     You are the Critic for an Autonomous Travel Planning Agent.
-    Your job is to review the drafted travel plan based on the user's requirements.
+    Your job is to review the drafted travel plan based on the user's ORIGINAL requirements.
+    
+    User's Original Request:
+    {user_request}
     
     Criteria to verify:
     1. Is the final output a COMPLETE, DAY-BY-DAY travel itinerary with a STRICT separate section for EACH individual day? (e.g., Day 1, Day 2, Day 3, Day 4, Day 5). Merging days (e.g. "Day 2-3") or skipping days is unacceptable. If it is just a summary or lacks strict daily breakdown, REJECT.
     2. Are all costs estimated against the budget? Did the agent provide a cost breakdown?
-    3. If it is OVER budget, does the plan EXPLICITLY flag this shortfall to the user? (CRITICAL: Do NOT reject a plan just because it is over budget! If the user gave an unrealistic budget and the planner flagged it as SEVERELY OVER BUDGET, you MUST ACCEPT it. Do not force the planner to find magical cheap alternatives).
-    4. If any tools failed, did the agent gracefully handle it and STILL generate a full day-by-day itinerary? If the agent gave up planning, REJECT.
+    3. Did the agent FAKE the user's budget? Cross-check the budget in the Draft Plan with the User's Original Request. If the agent magically increased the budget to make the plan "under budget", REJECT.
+    4. If it is OVER budget, does the plan EXPLICITLY flag this shortfall to the user? (CRITICAL: Do NOT reject a plan just because it is over budget! If the user gave an unrealistic budget and the planner flagged it as SEVERELY OVER BUDGET, you MUST ACCEPT it).
+    4. Did the agent mention any tool failures? If the agent writes "Unfortunately the tool failed" or "no data found", REJECT. The agent must confidently write the itinerary using its general knowledge even if a tool failed.
     5. Does EVERY recommendation (hotel, transport, meal, activity) have a stated reason for its selection?
     
     If the plan passes all criteria (or properly flags shortfalls), reply with exactly "ACCEPT".
@@ -71,7 +77,7 @@ def critic_node(state: AgentState):
     {last_message}
     """
     
-    critic_llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0, max_retries=3, timeout=30)
+    critic_llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0, max_retries=3, timeout=30)
     response = critic_llm.invoke([HumanMessage(content=critic_prompt)])
     
     if "ACCEPT" in response.content.strip().upper():

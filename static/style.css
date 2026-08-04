@@ -74,9 +74,39 @@ body {
 
 .container {
     width: 100%;
-    max-width: 900px;
+    max-width: 1200px;
     padding: 3rem 1.5rem;
     z-index: 1;
+}
+
+/* --- Layout --- */
+.layout-container {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.sidebar {
+    width: 350px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+}
+
+.content-area {
+    flex-grow: 1;
+    min-width: 0; /* Prevents overflow in flex child */
+}
+
+@media (max-width: 900px) {
+    .layout-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+    }
 }
 
 /* --- Typography --- */
@@ -147,6 +177,31 @@ label {
     color: var(--text-main);
 }
 
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.field-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+}
+
+.input-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .input-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .input-wrapper {
     position: relative;
     width: 100%;
@@ -159,6 +214,33 @@ label {
     transform: translateY(-50%);
     color: var(--text-muted);
     font-size: 1.25rem;
+}
+
+.budget-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.currency-dropdown {
+    position: absolute;
+    left: 0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--primary);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    outline: none;
+    z-index: 10;
+}
+
+.currency-dropdown option {
+    background: var(--bg-base);
+    color: var(--text-main);
 }
 
 input {
@@ -321,7 +403,7 @@ input:focus {
     font-size: 1.05rem;
 }
 
-.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+.markdown-body h1, .markdown-body h2 {
     font-family: var(--font-heading);
     color: #fff;
     margin-top: 1.5rem;
@@ -330,9 +412,21 @@ input:focus {
     padding-bottom: 0.3rem;
 }
 
+.markdown-body h3 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    color: var(--primary);
+    background: rgba(0, 229, 255, 0.05);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
 .markdown-body h1 { font-size: 2rem; color: var(--primary); border: none; }
 .markdown-body h2 { font-size: 1.5rem; color: var(--secondary); }
-.markdown-body h3 { font-size: 1.25rem; }
 
 .markdown-body p { margin-bottom: 1rem; line-height: 1.7; }
 

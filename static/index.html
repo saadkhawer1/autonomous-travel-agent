@@ -26,19 +26,58 @@
             <p>Your ultra-premium, AI-powered travel planner.</p>
         </header>
 
-        <main>
-            <section class="input-section glass-card">
+        <main class="layout-container">
+            <aside class="sidebar">
+                <section class="input-section glass-card">
                 <label for="prompt">Where do you want to go?</label>
-                <div class="input-wrapper">
-                    <i class="ph ph-magnifying-glass search-icon"></i>
-                    <input type="text" id="prompt" placeholder="e.g. plan a 5 day trip to Hunza with a budget of 120000" autocomplete="off">
+                <div class="input-grid">
+                    <div class="field-group">
+                        <label for="pickup" class="field-label">From</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-map-pin search-icon"></i>
+                            <input type="text" id="pickup" placeholder="e.g. Lahore" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="destination" class="field-label">Destination</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-airplane-landing search-icon"></i>
+                            <input type="text" id="destination" placeholder="e.g. Hunza" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="date" class="field-label">Travel Date</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-calendar search-icon"></i>
+                            <input type="date" id="date" placeholder="Select Date" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="budget" class="field-label">Budget</label>
+                        <div class="input-wrapper budget-wrapper">
+                            <select id="currency" class="currency-dropdown">
+                                <option value="PKR">PKR</option>
+                                <option value="USD">USD</option>
+                            </select>
+                            <input type="number" id="budget" placeholder="e.g. 150000" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="members" class="field-label">Travelers</label>
+                        <div class="input-wrapper">
+                            <i class="ph ph-users search-icon"></i>
+                            <input type="number" id="members" placeholder="e.g. 4" autocomplete="off">
+                        </div>
+                    </div>
                 </div>
                 <button id="submit-btn" class="glow-button">
                     <span>Generate Itinerary</span>
                     <i class="ph-bold ph-arrow-right"></i>
                 </button>
             </section>
+            </aside>
 
+            <div class="content-area">
             <section id="progress-section" class="progress-section glass-card hidden">
                 <div class="section-header">
                     <h2><i class="ph-fill ph-cpu"></i> Agent Progress</h2>
@@ -60,6 +99,7 @@
                     <!-- Markdown will be rendered here -->
                 </div>
             </section>
+            </div>
         </main>
     </div>
 
