@@ -8,7 +8,7 @@ def main():
     load_dotenv()
     
     # Optional check to verify critical keys exist
-    required_keys = ["GEMINI_API_KEY", "TAVILY_API_KEY", "GEOAPIFY_API_KEY", "OPENWEATHERMAP_API_KEY", "OPENROUTESERVICE_API_KEY"]
+    required_keys = ["GROQ_API_KEY", "TAVILY_API_KEY", "OPENWEATHERMAP_API_KEY", "OPENROUTESERVICE_API_KEY"]
     missing = [k for k in required_keys if not os.environ.get(k)]
     if missing:
         print(f"Warning: The following API keys are missing in the environment: {', '.join(missing)}")
@@ -40,7 +40,7 @@ def main():
                 print(f"  -> Tool: {tc['name']} | Args: {tc['args']}")
         elif latest_message.content and isinstance(latest_message.content, str) and not latest_message.content.startswith("Critic Feedback"):
             if latest_message.type == "ai":
-                print(f"\n[Agent Output]:\n{latest_message.content[:500]}... (truncated for preview)\n")
+                print(f"\n[Agent Output]:\n{latest_message.content}\n")
         
         # Print Critic Feedback specifically
         if latest_message.content and isinstance(latest_message.content, str) and latest_message.content.startswith("Critic Feedback"):

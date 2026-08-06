@@ -30,14 +30,25 @@ You must use your tools to:
 RULES:
 - Your primary output MUST be a complete, structured, day-by-day travel itinerary. Never just output a summary of tool results or failures.
 - You must explain your decisions! Every recommendation must have a stated reason.
-- CRITICAL PRICING RULE: NEVER hallucinate fake low prices just to make the plan fit the user's budget! Use REALISTIC market prices. 
+- CRITICAL PRICING RULE: NEVER hallucinate fake low prices just to make the plan fit the user's budget! You MUST calculate realistic costs by multiplying the cost per person per day by the number of travelers and the number of days. For example, 10 people eating for 4 days cannot cost 3000 PKR total. Use REALISTIC market prices. 
 - DO NOT FAKE THE USER'S BUDGET! If the user gives a budget (e.g. 300 USD), you MUST use that exact budget (converted to local currency). Do not magically increase the user's budget to 500,000 to make the plan "under budget". If the real cost exceeds the user's budget, calculate the REALISTIC cost, explicitly flag that the plan is SEVERELY OVER BUDGET, and explain to the user why their budget is unrealistic.
 - If a tool fails or returns no data (e.g., cannot find a landmark), DO NOT mention the failure in the itinerary! SILENTLY use your general knowledge to fill in the gaps and write the plan confidently. The user should never know a tool failed.
+- LOCAL TRAVEL COST RULE: For any travel inside a city (e.g., from a hotel to a tourist spot), you MUST calculate the distance using the routing_tool in kilometers and multiply it by 100 PKR per kilometer to estimate the local transport cost. Include this in your cost breakdown.
+- WEATHER REQUIREMENT: Do NOT include weather inside the daily breakdown. Instead, you MUST create a beautifully formatted Markdown table AT THE VERY END of your entire output (under a "Weather Forecast" heading). The table must explicitly have columns for: Date, Lowest Temp, Highest Temp, and Conditions (e.g., sunny, drizzling, etc.). Use the weather_tool to get this data.
 - DO NOT just write a meta-description of what you did. DO NOT write meta-commentary at the end like "I have provided reasons for each recommendation". The final output is for the USER, not the Critic. Actively create and format the actual plan beautifully in Markdown.
 ''')
     
-    # Prepend system prompt
-    msgs = [system_prompt] + list(state['messages'])
+    # Prepend system prompt and prune old heavy messages to prevent rate limit (6000 TPM)
+    messages = state['messages']
+    pruned_messages = [messages[0]]
+    for msg in messages[1:]:
+        # If it's an AI message with a large drafted plan (no tool calls), and it was rejected, drop it to save tokens
+        if msg.type == 'ai' and not getattr(msg, 'tool_calls', None) and len(msg.content) > 500:
+            if msg != messages[-1]:
+                continue
+        pruned_messages.append(msg)
+        
+    msgs = [system_prompt] + pruned_messages
     response = llm_with_tools.invoke(msgs)
     
     return {"messages": [response], "iterations": state.get("iterations", 0) + 1}
@@ -67,8 +78,10 @@ def critic_node(state: AgentState):
     2. Are all costs estimated against the budget? Did the agent provide a cost breakdown?
     3. Did the agent FAKE the user's budget? Cross-check the budget in the Draft Plan with the User's Original Request. If the agent magically increased the budget to make the plan "under budget", REJECT.
     4. If it is OVER budget, does the plan EXPLICITLY flag this shortfall to the user? (CRITICAL: Do NOT reject a plan just because it is over budget! If the user gave an unrealistic budget and the planner flagged it as SEVERELY OVER BUDGET, you MUST ACCEPT it).
-    4. Did the agent mention any tool failures? If the agent writes "Unfortunately the tool failed" or "no data found", REJECT. The agent must confidently write the itinerary using its general knowledge even if a tool failed.
-    5. Does EVERY recommendation (hotel, transport, meal, activity) have a stated reason for its selection?
+    5. Did the agent mention any tool failures? If the agent writes "Unfortunately the tool failed" or "no data found", REJECT. The agent must confidently write the itinerary using its general knowledge even if a tool failed.
+    6. Does EVERY recommendation (hotel, transport, meal, activity) have a stated reason for its selection?
+    7. Did the agent hallucinate FAKE low prices? Look at the cost breakdown and consider the number of people and days. If the cost for hotels, meals, or transport is absurdly low (e.g., 3000 PKR for 10 people over 4 days), REJECT it and force the agent to use realistic market prices, even if it goes severely over budget.
+    8. Did the agent follow the LOCAL TRAVEL COST RULE? Any local intra-city travel (e.g. hotel to attraction) MUST be priced at 100 PKR per kilometer using the routing_tool distance. If not, REJECT.
     
     If the plan passes all criteria (or properly flags shortfalls), reply with exactly "ACCEPT".
     If the plan fails, reply with "REJECT: " followed by detailed feedback on what to fix.

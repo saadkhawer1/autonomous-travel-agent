@@ -3,106 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autonomous Travel Planner - Premium</title>
-    <!-- Modern Font: Outfit & Inter -->
+    <title>Travel Agent - Boarding Pass</title>
+    <!-- Modern Fonts: Space Mono for Display, DM Sans for Body -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- Phosphor Icons for modern premium icons -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Marked.js for parsing Markdown itinerary -->
+    <!-- Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <!-- Animated Background Gradients -->
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
-    <div class="bg-shape shape-3"></div>
-
     <div class="container">
-        <header>
-            <h1><i class="ph-fill ph-airplane-tilt"></i> Travel<span>Agent</span></h1>
-            <p>Your ultra-premium, AI-powered travel planner.</p>
-        </header>
-
         <main class="layout-container">
             <aside class="sidebar">
-                <section class="input-section glass-card">
-                <label for="prompt">Where do you want to go?</label>
-                <div class="input-grid">
-                    <div class="field-group">
-                        <label for="pickup" class="field-label">From</label>
-                        <div class="input-wrapper">
-                            <i class="ph ph-map-pin search-icon"></i>
-                            <input type="text" id="pickup" placeholder="e.g. Lahore" autocomplete="off">
+                <section class="input-section ticket-card">
+                    <div class="ticket-header">
+                        <span class="ticket-class">FIRST CLASS</span>
+                        <h2 class="ticket-title"><i class="ph-fill ph-airplane-tilt"></i> TRAVEL AGENT</h2>
+                        <span class="ticket-barcode">||| |||| || ||| |</span>
+                    </div>
+                    
+                    <div class="ticket-body">
+                        <div class="input-grid">
+                            <div class="field-group">
+                                <label for="pickup" class="field-label">FROM / ORIGIN</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="pickup" placeholder="LHE" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label for="destination" class="field-label">TO / DESTINATION</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="destination" placeholder="ISB" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label for="date" class="field-label">DATE OF TRAVEL</label>
+                                <div class="input-wrapper">
+                                    <input type="date" id="date" placeholder="Select Date" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label for="budget" class="field-label">BUDGET LIMIT</label>
+                                <div class="input-wrapper budget-wrapper">
+                                    <select id="currency" class="currency-dropdown">
+                                        <option value="PKR">PKR</option>
+                                        <option value="USD">USD</option>
+                                    </select>
+                                    <input type="number" id="budget" placeholder="150000" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label for="members" class="field-label">PASSENGERS</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="members" placeholder="1" autocomplete="off">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="field-group">
-                        <label for="destination" class="field-label">Destination</label>
-                        <div class="input-wrapper">
-                            <i class="ph ph-airplane-landing search-icon"></i>
-                            <input type="text" id="destination" placeholder="e.g. Hunza" autocomplete="off">
-                        </div>
+                    
+                    <div class="ticket-footer">
+                        <button id="submit-btn" class="print-button">
+                            <span>PRINT ITINERARY</span>
+                            <i class="ph-bold ph-printer"></i>
+                        </button>
                     </div>
-                    <div class="field-group">
-                        <label for="date" class="field-label">Travel Date</label>
-                        <div class="input-wrapper">
-                            <i class="ph ph-calendar search-icon"></i>
-                            <input type="date" id="date" placeholder="Select Date" autocomplete="off">
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label for="budget" class="field-label">Budget</label>
-                        <div class="input-wrapper budget-wrapper">
-                            <select id="currency" class="currency-dropdown">
-                                <option value="PKR">PKR</option>
-                                <option value="USD">USD</option>
-                            </select>
-                            <input type="number" id="budget" placeholder="e.g. 150000" autocomplete="off">
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label for="members" class="field-label">Travelers</label>
-                        <div class="input-wrapper">
-                            <i class="ph ph-users search-icon"></i>
-                            <input type="number" id="members" placeholder="e.g. 4" autocomplete="off">
-                        </div>
-                    </div>
-                </div>
-                <button id="submit-btn" class="glow-button">
-                    <span>Generate Itinerary</span>
-                    <i class="ph-bold ph-arrow-right"></i>
-                </button>
-            </section>
+                </section>
             </aside>
 
             <div class="content-area">
-            <section id="progress-section" class="progress-section glass-card hidden">
-                <div class="section-header">
-                    <h2><i class="ph-fill ph-cpu"></i> Agent Progress</h2>
-                    <div id="loader" class="loader pulse"></div>
-                </div>
-                <div id="log-container" class="log-container">
-                    <!-- Logs will be appended here -->
-                </div>
-            </section>
+                <section id="hero-section" class="hero-section">
+                    <div class="hero-content">
+                        <i class="ph-light ph-ticket"></i>
+                        <h1>YOUR JOURNEY AWAITS</h1>
+                        <p>Fill out the boarding pass on the left to generate your custom travel itinerary.</p>
+                    </div>
+                </section>
 
-            <section id="result-section" class="result-section glass-card hidden">
-                <div class="section-header">
-                    <h2><i class="ph-fill ph-map-pin"></i> Your Premium Itinerary</h2>
-                    <button id="copy-btn" class="icon-btn" title="Copy to clipboard">
-                        <i class="ph ph-copy"></i>
-                    </button>
-                </div>
-                <div id="itinerary-content" class="itinerary-content markdown-body">
-                    <!-- Markdown will be rendered here -->
-                </div>
-            </section>
+                <section id="progress-section" class="progress-section doc-card hidden">
+                    <div class="section-header">
+                        <h2>SYSTEM LOG</h2>
+                        <div id="loader" class="loader pulse"></div>
+                    </div>
+                    <div id="log-container" class="log-container">
+                        <!-- Logs will be appended here -->
+                    </div>
+                </section>
+
+                <section id="result-section" class="result-section doc-card hidden">
+                    <div class="section-header">
+                        <h2>OFFICIAL ITINERARY</h2>
+                        <button id="copy-btn" class="icon-btn" title="Copy to clipboard">
+                            <i class="ph ph-copy"></i>
+                        </button>
+                    </div>
+                    <div id="itinerary-content" class="itinerary-content markdown-body">
+                        <!-- Markdown will be rendered here -->
+                    </div>
+                </section>
             </div>
         </main>
     </div>
 
     <script src="/static/script.js"></script>
+    <script>
+        // Minor script tweak to hide hero section when processing starts
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            const pickup = document.getElementById('pickup').value.trim();
+            const dest = document.getElementById('destination').value.trim();
+            const date = document.getElementById('date').value;
+            const budget = document.getElementById('budget').value;
+            const members = document.getElementById('members').value;
+            if (pickup && dest && date && budget && members) {
+                document.getElementById('hero-section').classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 </html>
