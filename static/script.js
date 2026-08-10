@@ -26,19 +26,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // (Or you could add it to all of them, but clicking the button is standard)
 
     function startPlanning() {
+        const dietInput = document.getElementById('diet');
         const pickup = pickupInput.value.trim();
         const destination = destinationInput.value.trim();
         const date = dateInput.value.trim();
+        const interests = interestsInput.value.trim();
         const currency = currencyInput.value;
         const budget = budgetInput.value.trim();
         const members = membersInput.value.trim();
+        const diet = dietInput ? dietInput.value : 'None';
 
         if (!pickup || !destination || !date || !budget || !members) {
-            alert("Please fill out all fields before generating an itinerary.");
+            alert("Please fill out all required fields (Interests are optional).");
             return;
         }
 
-        const query = `Plan a trip from ${pickup} to ${destination} on ${date} for ${members} people with a total budget of ${budget} ${currency}. Calculate realistic costs and convert if necessary.`;
+        let query = `Plan a trip from ${pickup} to ${destination} starting on ${date} for ${members} people with a total budget of ${budget} ${currency}.`;
+        
+        if (interests) {
+            query += ` Focus the itinerary heavily on these interests: ${interests}.`;
+        }
+        if (diet && diet !== 'None') {
+            query += ` The user has a dietary preference: ${diet}. Ensure all restaurants recommended match this diet.`;
+        }
+        
+        query += ` Calculate realistic costs and convert if necessary.`;
 
         // Reset UI state
         submitBtn.disabled = true;

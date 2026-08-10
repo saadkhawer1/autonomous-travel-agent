@@ -40,9 +40,33 @@
                                 </div>
                             </div>
                             <div class="field-group">
-                                <label for="date" class="field-label">DATE OF TRAVEL</label>
+                                <label for="date" class="field-label">DEPARTURE DATE</label>
                                 <div class="input-wrapper">
                                     <input type="date" id="date" placeholder="Select Date" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label for="return_date" class="field-label">RETURN DATE</label>
+                                <div class="input-wrapper">
+                                    <input type="date" id="return_date" placeholder="Select Date" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label for="interests" class="field-label">INTERESTS (OPTIONAL)</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="interests" placeholder="e.g. Nature, Food" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label for="diet" class="field-label">DIETARY PREF.</label>
+                                <div class="input-wrapper">
+                                    <select id="diet" class="ticket-select" style="width: 100%; padding: var(--spacing-sm); background: transparent; border: none; color: var(--text-primary); font-family: 'Space Mono', monospace; font-size: 0.9rem; outline: none; -webkit-appearance: none; appearance: none; cursor: pointer;">
+                                        <option value="None" style="background: var(--surface-light)">None</option>
+                                        <option value="Halal" style="background: var(--surface-light)">Halal</option>
+                                        <option value="Vegan" style="background: var(--surface-light)">Vegan</option>
+                                        <option value="Vegetarian" style="background: var(--surface-light)">Vegetarian</option>
+                                        <option value="Gluten-Free" style="background: var(--surface-light)">Gluten-Free</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="field-group">
@@ -94,9 +118,12 @@
 
                 <section id="result-section" class="result-section doc-card hidden">
                     <div class="section-header">
-                        <h2>OFFICIAL ITINERARY</h2>
-                        <button id="copy-btn" class="icon-btn" title="Copy to clipboard">
-                            <i class="ph ph-copy"></i>
+                        <div class="actions">
+                        <button id="copy-btn" class="btn btn-secondary">
+                            <i class="ph-fill ph-copy"></i> COPY
+                        </button>
+                        <button id="pdf-btn" class="btn btn-secondary" onclick="window.print()">
+                            <i class="ph-fill ph-file-pdf"></i> PDF
                         </button>
                     </div>
                     <div id="itinerary-content" class="itinerary-content markdown-body">
